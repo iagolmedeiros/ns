@@ -69,13 +69,13 @@ using namespace std;
 
 double TxRate = 0; // TAXA DE RECEBIMENTO DE PACOTES
 
-const int pedestres = 3;
-const int carros = 3;
-const int trens = 4;
+const int pedestres = 0;
+const int carros = 5;
+const int trens = 0;
 
 const int node_ue = pedestres + carros + trens;
 
-uint16_t n_cbr = 3;
+uint16_t n_cbr = 0;
 uint16_t enb_HPN = 3; // 7;
 uint16_t low_power = 8; // 56;
 uint16_t hot_spot = 0; // 14;
@@ -83,8 +83,8 @@ int cell_ue[77][57]; // matriz de conexões
 int txpower = 15; //  Lte Ue Tx Power
 int distancia = 500; //distância entre torres HPN (mínima)
 
-double simTime = 30.0; // TEMPO_SIMULAÇÃO
-int transmissionStart = 5;
+double simTime = 20.0; // TEMPO_SIMULAÇÃO
+int transmissionStart = 4;
 
 // número de handovers realizados
 unsigned int handNumber = 0;
@@ -269,7 +269,7 @@ std::string exec(const char* cmd)
 
 /*------------------------- CRIAÇÃO ARQUIVO COM QOS'S ----------------------*/
 void WriteMetrics()
-{   
+{
     NS_LOG_DEBUG(Simulator::Now().GetSeconds() << " Segundos...");
     NS_LOG_DEBUG("Realizados " << handNumber << " Handover");
     for (int i = 0; i < 77; ++i)
@@ -315,7 +315,7 @@ void WriteMetrics()
 
                     //CÁLCULO DA MÉDIA EXPONENCIAL
                     //qosOutFile << 2 * (((float)nReceived - 1) / 60 - valorAtualQos) / (exp_mean_window + 1) + valorAtualQos;
-                    
+
                     //CALCULO DE QOS POR MÉDIA SIMPLES
                     if (valorAtualQos)
                         qosOutFile << (((float)nReceived - 1) / 60 + valorAtualQos) / 2;
@@ -398,14 +398,14 @@ void WriteMetrics()
                     ofstream qoeOutFile(qoeFileName.str(),
                         std::ofstream::out | std::ofstream::trunc);
 
-                    
+
 
                     cmd << "python2.7 ia.py " << ILoss << " " << PLoss << " " << BLoss
                         << " 20";
 
                     //CÁLCULO DA MÉDIA EXPONENCIAL
                     //qoeOutFile << 2 * (stod(exec(cmd.str().c_str())) - valorAtualQoe) / (exp_mean_window + 1) + valorAtualQoe;
-                    
+
                     //CÁLCULO POR MÉDIA SIMPLES
                     if (valorAtualQoe)
                         qoeOutFile << (stod(exec(cmd.str().c_str())) + valorAtualQoe) / 2;
@@ -490,8 +490,8 @@ int main(int argc, char* argv[])
     VideoTraceParse("st_container_cif_h264_300_20.st");
 
     // void WriteMetrics();
-    
-   
+
+
 
     /*--------------------- COMMAND LINE PARSING -------------------*/
     //std::string entradaSumo = "mobil/reta2km.tcl"; // Mobilidade usada
@@ -571,7 +571,7 @@ int main(int argc, char* argv[])
     if (handoverAlg == "ahp") {
         lteHelper->SetHandoverAlgorithmType("ns3::AhpHandoverAlgorithm");
         lteHelper->SetHandoverAlgorithmAttribute("StartTime", UintegerValue(transmissionStart));
-        lteHelper->SetHandoverAlgorithmAttribute("StopTime", UintegerValue(transmissionStart + 60));
+        lteHelper->SetHandoverAlgorithmAttribute("StopTime", UintegerValue(simTime));
     }
 
     else if (handoverAlg == "noop")
@@ -688,7 +688,7 @@ int main(int argc, char* argv[])
     Ns2MobilityHelper mobil_carro = Ns2MobilityHelper("mobil/lucaCarro.tcl");
     Ns2MobilityHelper mobil_trem = Ns2MobilityHelper("mobil/lucaTrem.tcl");
 
-    //mobility.Install(ueNodes.Begin(), ueNodes.End()); 
+    //mobility.Install(ueNodes.Begin(), ueNodes.End());
     mobil_ped.Install(pedestres_nc.Begin(), pedestres_nc.End());
     mobil_carro.Install(carros_nc.Begin(), carros_nc.End());
     mobil_trem.Install(trens_nc.Begin(), trens_nc.End());
